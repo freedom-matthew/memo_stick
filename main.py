@@ -1,24 +1,26 @@
+import random
 from tkinter import *
 from pandas import *
-from random import *
 
 BACKGROUND_COLOR = "#B1DDC6"
 
+data = read_csv("data/french_words.csv")
+to_learn = data.to_dict(orient="records")
+current_card = {}
 
-# region BUTTONS
+
+def flip_card():
+    canvas.itemconfig(card_title, text="English")
+    canvas.itemconfig(card_word, text=current_card["English"])
+
+
 def next_card():
-    current_card = choice(to_learn)
+    global current_card
+    current_card = random.choice(to_learn)
     canvas.itemconfig(card_title, text="French")
     canvas.itemconfig(card_word, text=current_card["French"])
 
 
-# endregion
-# region DATA setup
-data = read_csv("data/french_words.csv")
-to_learn = data.to_dict(orient="records")
-print(to_learn)
-# endregion
-# region UI setup
 window = Tk()
 window.title("MemoStick")
 window.config(padx=50, pady=50, bg=BACKGROUND_COLOR)
@@ -28,17 +30,20 @@ front_card_image = PhotoImage(file="images/card_front.png")
 canvas.create_image(400, 263, image=front_card_image)
 card_title = canvas.create_text(400, 100, font=("Ariel", 40, "italic"))
 card_word = canvas.create_text(400, 263, font=("Ariel", 60, "bold"))
-canvas.grid(row=0, column=0, columnspan=2, sticky="ew")
+canvas.grid(row=0, column=0, columnspan=3, sticky="ew")
 
 cross_image = PhotoImage(file="images/wrong.png")
 wrong_button = Button(image=cross_image, highlightthickness=0, command=next_card)
 wrong_button.grid(row=1, column=0)
 
+flip_image = PhotoImage(file="images/flip.png")
+flip_button = Button(image=flip_image, highlightthickness=0, command=flip_card)
+flip_button.grid(row=1, column=1)
+
 check_image = PhotoImage(file="images/right.png")
 right_button = Button(image=check_image, highlightthickness=0, command=next_card)
-right_button.grid(row=1, column=1)
+right_button.grid(row=1, column=2)
 
 next_card()
 
 window.mainloop()
-# endregion
